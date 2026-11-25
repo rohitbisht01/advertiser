@@ -1,5 +1,8 @@
 import { Link, Route, Routes, useParams } from 'react-router-dom'
+import { Comments } from './Comments.jsx'
+import { Newsletter } from './Newsletter.jsx'
 import { POSTS } from './posts.js'
+import { useArticleRead } from './useArticleRead.js'
 
 const pageStyle = { maxWidth: 720, margin: '0 auto', padding: 16, fontFamily: 'Georgia, serif', lineHeight: 1.6 }
 
@@ -25,6 +28,7 @@ function PostList() {
           <p>{post.excerpt}</p>
         </article>
       ))}
+      <Newsletter source="home" />
     </main>
   )
 }
@@ -43,7 +47,11 @@ function PostPage() {
     )
   }
 
-  const next = POSTS[(index + 1) % POSTS.length]
+  return <PostContent key={post.id} post={post} next={POSTS[(index + 1) % POSTS.length]} />
+}
+
+function PostContent({ post, next }) {
+  const articleEndRef = useArticleRead(post)
 
   return (
     <main>
@@ -53,6 +61,9 @@ function PostPage() {
       {post.body.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
+      <div ref={articleEndRef} />
+      <Comments postId={post.id} />
+      <Newsletter source="post" postId={post.id} />
       <hr />
       <p>
         Next: <Link to={`/blog/${next.id}`}>{next.title}</Link>
